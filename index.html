@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+	Created with code from:
+		PKI.js - https://github.com/PeculiarVentures/PKI.js
+		localForage - https://github.com/localForage/localForage
+		PicnicCSS - http://picnicss.com/
+		Forge: https://github.com/digitalbazaar/forge
+-->
+	<head>
+		<title>Keygen-replacement Testing for Codesigning</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<link rel="stylesheet" href="css/picnic.min.css">
+		<style>
+			.intro{padding:10px;max-width:960px;width:100%;margin:100px auto 500px}
+		</style>
+	</head>
+
+	<body>
+		<!--<nav>
+			<a href="/" class="brand"><span>Keygen-replacement</span></a>
+			<input id="bmenu" type="checkbox" class="show">
+			<label for="bmenu" class="burger toggle pseudo button">menu</label>
+			<div class="menu">
+				<a href="//" class="pseudo button icon-help-circled">1</a>
+				<a href="/" target="_blank" class="pseudo button icon-g">2</a>
+				<a href="//" class="button icon-file-code">3</a>
+			</div>
+		</nav>-->
+
+		<main class="intro test">
+			<h1>Keygen-replacement Testing for Codesigning</h1>
+			<p>Button below will generate an RSA key, store it in browser local storage, then create a PKCS#10 CSR.</p>
+			<p>The following information will be used for the test certificate:</p>
+			<form method="post" id="codesigningForm" action="https://secure.comodo.com/products/!PlaceOrder">
+
+
+			<div>
+				<input class="stack" type="text" name="organizationName" id="organizationName" maxLength="64" placeholder="organizationName" value="Testing Org" />
+				<input class="stack" type="text" name="streetAddress1" id="streetAddress1" maxLength="128" placeholder="streetAddress1" value="1 High Street" />
+				<input class="stack" type="text" name="localityName" id="localityName" maxLength="128" placeholder="localityName" value="Salford" />
+				<input class="stack" type="text" name="stateOrProvinceName" id="stateOrProvinceName" maxLength="128" placeholder="stateOrProvinceName" value="Greater Manchester" />
+				<input class="stack" type="text" name="postalCode" id="postalCode" maxLength="40" placeholder="postalCode" value="M5 1AB" />
+				<input class="stack" type="text" name="countryName" id="countryName" maxLength="2" placeholder="countryName" value="GB" />
+			</div>
+
+			<p>Fill out the below:</p>
+			<div>
+				<input class="stack" type="text" name="forename" id="forename" maxLength="64" placeholder="First Name (forename)" />
+				<input class="stack" type="text" name="surname" id="surname" maxLength="64" placeholder="Last Name (surname)" />
+				<input class="stack" type="text" name="loginName" id="loginName" maxLength="64" placeholder="Username (loginName)" />
+				<input class="stack" type="password" name="loginPassword" id="loginPassword" maxLength="64" placeholder="Password (loginPassword)" />
+				<input class="stack" type="text" name="emailAddress" id="emailAddress" maxLength="255" placeholder="Email Address" />
+			</div>
+
+			<br />
+
+
+			<input name="1_csr" id="1_csr" type="hidden">
+
+			<input name="ap" id="ap" value="NeverTheTwain" type="hidden">
+			<input name="reseller" id="reseller" value="Y" type="hidden">
+			<input name="caCertificateID" id="caCertificateID" value="493" type="hidden">
+			<input name="1_PPP" id="1_PPP" value="1511" type="hidden">
+
+			<input type="hidden" name="errorURL" value="https://pkilabs.com/keygen/error/">
+			<input type="hidden" name="successURL" value="https://pkilabs.com/keygen/success/">
+
+			</form>
+
+			<button onClick="createPKCS10();">Request Codesigning Certificate</button>
+		</main>
+		<script type="text/javascript" src="js/pkijs/PKCS10_simple.js"></script>
+		<script type="text/javascript" src="js/localforage/localforage.js"></script>
+		<script type="text/javascript" src="js/forge/forge.min.js"></script>
+	</body>
+</html>

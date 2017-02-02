@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+	Created with code from:
+		PKI.js - https://github.com/PeculiarVentures/PKI.js
+		localForage - https://github.com/localForage/localForage
+		PicnicCSS - http://picnicss.com/
+		Forge: https://github.com/digitalbazaar/forge
+
+	To do:
+		* Input form validation
+		* Key size control? (Needed? Support for ECC with codesigning is...?)
+		* Remove key from localstorage after PKCS#12 export
+		* Browser/webcrypto support detection and graceful degradation (ie - if the browser doesn't support the needed features, notify user)
+-->
+	<head>
+		<title>Keygen-replacement Testing for Codesigning</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<link rel="stylesheet" href="../css/picnic.min.css">
+		<style>
+			.intro{padding:10px;max-width:960px;width:100%;margin:100px auto 500px}
+		</style>
+		<script type="text/javascript">
+			window.onload = function() {
+				var urlParams = window.location.search.substr(1).split("&");
+				for (var x = 0; x < urlParams.length; x++) {
+					var splitParam = urlParams[x].split("=");
+					if (splitParam[0] == "collectionCode") {
+						document.getElementById("collectionCode").value = splitParam[1];
+						var po = document.createElement('script');
+						po.type = 'text/javascript';
+						po.async = true;
+						po.src = "https://secure.comodo.com/products/download/CollectCCC?collectionCode=" + escape(document.getElementById("collectionCode").value) + "&queryType=1&responseType=2&responseEncoding=2&product=8&callbackFunctionName=enableDownload";
+						var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+					}
+				}
+			}
+		</script>
+	</head>
+
+	<body>
+		<!--<nav>
+			<a href="/" class="brand"><span>Keygen-replacement</span></a>
+			<input id="bmenu" type="checkbox" class="show">
+			<label for="bmenu" class="burger toggle pseudo button">menu</label>
+			<div class="menu">
+				<a href="//" class="pseudo button icon-help-circled">1</a>
+				<a href="/" target="_blank" class="pseudo button icon-g">2</a>
+				<a href="//" class="button icon-file-code">3</a>
+			</div>
+		</nav>-->
+
+		<main class="intro test">
+			<h1>Keygen-replacement Testing for Codesigning</h1>
+			<p>Button below will collect the certificate, and export to a PKCS#12/PFX file.</p>
+			<div>
+				<input class="stack" type="text" name="collectionCode" id="collectionCode" maxLength="128" placeholder="collectionCode" value="" />
+			</div>
+
+			<button onClick="goP12();" id="goP12" disabled>Request Codesigning Certificate</button>
+			<br />
+			<div id="downloadPKCS12"></div>
+		</main>
+		<script type="text/javascript">
+
+
+		function enableDownload() {
+			document.getElementById("goP12").disabled = false;
+		}
+
+		function goP12() {
+			var pki = forge.pki;
+			var privateKey;
+			var p7 = forge.pkcs7.messageFromPem('-----BEGIN PKCS7-----' + g_ccc + '-----END PKCS7-----');
+
+			localforage.getItem('codesigningKey').then(function(value) {
+				privateKey = pki.privateKeyFromPem(value);
+				
+				//console.log('\nCreating PKCS#12...');
+
+				//console.log(privateKey);
+
+				var newPkcs12Asn1 = forge.pkcs12.toPkcs12Asn1(privateKey, [p7.certificates[0]], 'isnthisfun', {algorithm: '3des', generateLocalKeyId: true, friendlyName: 'TestP12'});
+
+				var newPkcs12Der = forge.asn1.toDer(newPkcs12Asn1).getBytes();
+				var b64P12 = forge.util.encode64(newPkcs12Der);
+
+				//console.log('\nBase64-encoded new PKCS#12:');
+				//console.log(b64P12);
+
+				makeDownloadButton(b64P12);
+			}).catch(function(err) {
+				console.log(err);
+			});
+		}
+
+		function makeDownloadButton(base64P12) {
+			var a = document.createElement('a');
+			a.download = 'example.p12';
+			a.setAttribute('href', 'data:application/x-pkcs12;base64,' + base64P12);
+			a.appendChild(document.createTextNode('Download PKCS#12/PFX File - password is "isnthisfun"'));
+			//document.body.appendChild(a);
+			document.getElementById('downloadPKCS12').appendChild(a);
+		}
+		</script>
+		<script type="text/javascript" src="../js/pkijs/PKCS10_simple.js"></script>
+		<script type="text/javascript" src="../js/localforage/localforage.js"></script>
+		<script type="text/javascript" src="../js/forge/forge.min.js"></script>
+	</body>
+</html>
